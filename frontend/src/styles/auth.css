@@ -1,0 +1,23 @@
+/* auth.css - Styling for PeopleHub HRM Registration */
+
+/* Custom style for webkit date inputs to match design */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  filter: invert(0.35);
+  transition: opacity 0.2s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Fallback placeholder color for select when unselected */
+select:invalid,
+select option[value=""] {
+  color: #94a3b8;
+}
+
+select option {
+  color: #0f172a;
+}
