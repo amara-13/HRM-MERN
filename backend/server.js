@@ -7,6 +7,7 @@ const authRoutes = require("./routes/authRoutes");
 const PORT = process.env.PORT || 5000;
 const roleRoutes = require("./routes/roleRoutes");
 const rbacTestRoutes = require("./routes/rbcaTestRoutes");
+const permissionRoutes = require("./routes/permissionRoutes");
 
 const app = express();
 app.use(helmet());
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 app.use("/api/roles", roleRoutes);
 app.use("/api/rbac-test", rbacTestRoutes);
 app.use("/auth", authRoutes);
+app.use("/api/permissions",permissionRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
