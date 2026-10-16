@@ -4,4 +4,11 @@ const sendError = (res,message,statusCode=400)=>{
  message
     });
 };
-module.exports = sendError;
+const sendResponse = (res,message,statusCode = 200,data)=>{
+    return res.status(statusCode).json({
+        success:true,
+        message,
+        data:data,
+    });
+}
+module.exports = {sendError,sendResponse};
