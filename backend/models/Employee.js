@@ -84,8 +84,7 @@ const employeeSchema = mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Users',
-        unique: true,
-        sparse: true,
+        default: null,
     },
     // branch: {
     //     type: mongoose.Schema.Types.ObjectId,
@@ -175,10 +174,34 @@ const employeeSchema = mongoose.Schema({
             },
         },
     ],
+    statusUpdateReason:{
+        type:String,
+        default:"",
+    },
+    deletedAt: {
+    type: Date,
+    default: null,
 },
+deletedBy:{
+  type:mongoose.Schema.Types.ObjectId,
+  ref:"Users",
+  default:null,
+},
+
+},
+
     {
         timestamps: true
     },
 );
+
+employeeSchema.index(
+    { user: 1 },
+    {
+        unique: true,
+        partialFilterExpression: { user: { $type: "objectId" } }
+    }
+);
+
 const Employee = mongoose.model("Employee", employeeSchema);
 module.exports = { Employee };

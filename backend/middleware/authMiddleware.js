@@ -1,4 +1,4 @@
-const sendError = require("../helpers/errorHelper");
+const { sendError } = require("../helpers/errorHelper");
 const jwt = require('jsonwebtoken');
 const Users = require("../models/Auth");
 require("../models/Permission"); // register Permission schema for populate

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Role = require("../models/Role");
 const User = require("../models/Auth");
 const Permission = require("../models/Permission");
-const sendError = require("../helpers/errorHelper");
+const { sendError } = require("../helpers/errorHelper");
 const { permission } = require("node:process");
 const isNameValid = /^[A-Za-z\s]+$/;
 

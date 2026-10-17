@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { Departments } = require("../models/Department");
 const { Employee } = require("../models/Employee");
+const Users = require("../models/Auth");
 const { EmployeeCounter } = require("../models/EmployeeCounter");
 const { sendError, sendResponse } = require("../helpers/errorHelper");
 const {
@@ -11,7 +12,6 @@ const {
     isValidEmploymentType,
     isValidGender,
 } = require("../helpers/validationHelper");
-
 const createEmployee = async (req, res) => {
     try {
         const { firstName, lastName, email, phone, department, designation, joiningDate, employmentType, profilePhoto, dateOfBirth,
@@ -106,6 +106,13 @@ const createEmployee = async (req, res) => {
                 return sendError(res, "Invalid user ID", 400);
             }
             validatedUserId = user;
+        }
+
+        if (validatedUserId) {
+            const userExist = await Employee.findOne({ user: validatedUserId });
+            if (userExist) {
+                return sendError(res, "An employee with this user already exists", 409);
+            }
         }
 
         const emailExist = await Employee.findOne({ email: cleanEmail });
@@ -285,8 +292,160 @@ const getAllEmployee = async (req, res) => {
         return sendError(res, "internal server error", 500);
     }
 };
+const getEmployeeById = async (req, res) => {
+    try {
+        console.log("getEmployeeById controller called");
+        console.log("Request params:", req.params);
+        const { id } = req.params;
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return sendError(res, "Invalid Id", 400);
+        }
+        const existingEmployee = await Employee.findById(id);
+        if (!existingEmployee) {
+            return sendError(res, "Employee not found", 404);
+        }
+        const employee = await existingEmployee.populate("department", "name").populate("reportingManager", "firstName lastName employeeId");
+        return sendResponse(res, "fetch user successfully", 200, employee);
+    } catch (error) {
+        console.error("Error while fetching employee by Id", error);
+        return sendError(res, "Internal server Error", 500);
+    }
+}
+const deleteEmployee = async (req, res) => {
+
+    const { id } = req.params;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+        return sendError(res, "Invalid Id", 400);
+    }
+    if (!req.user?._id) {
+        return sendError(res, "Authenticated User not found", 401);
+    }
+    let session;
+    let result = null;
+    try {
+        session = await mongoose.startSession();
+        await session.withTransaction(async () => {
+            const employee = await Employee.findById(id);
+            if (!employee) {
+                result = {
+                    success: false,
+                    message: "Employee not found",
+                    statusCode: 404,
+                };
+                return;
+            }
+            if (employee.employmentStatus === "Terminated") {
+
+                result = {
+                    success: false,
+                    message: "Employee already terminated",
+                    statusCode: 409,
+                };
+                return;
+            }
+            if (employee.user) {
+                const user = await Users.findById(employee.user);
+                if (user && user.isActive !== true) {
+                    result = {
+                        success: false,
+                        message: "Employee user account is already deactivated",
+                        statusCode: 409,
+                    };
+                    return;
+                }
+                if (user) {
+                    user.isActive = false;
+                    await user.save({ session });
+                }
+            }
+
+            employee.employmentStatus = "Terminated";
+            employee.deletedAt = new Date();
+            employee.deletedBy = req.user._id;
+            await employee.save({ session });
+            await Departments.updateMany(
+                { manager: employee._id }, { $set: { manager: null } }, { session }
+            );
+            await Employee.updateMany({ reportingManager: employee._id }, { $set: { reportingManager: null } }, { session });
+            result = {
+                success: true,
+                message: "Employee terminated successfully",
+                statusCode: 200,
+            };
+        })
+        if (!result || !result.success) {
+            return sendError(
+                res,
+                result?.message || "Employee termination failed",
+                result?.statusCode || 500
+            );
+        }
+
+        return sendResponse(
+            res,
+            result.message,
+            result.statusCode
+        );
+
+    } catch (error) {
+        console.log("Error while deleting the employee", error);
+        return sendError(res, "Interval Server Error", 500);
+    } finally {
+        if (session) {
+            await session.endSession();
+        }
+    }
+}
+const updateEmploymentStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { employeeStatus, reason } = req.body;
+
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return sendError(res, "Invalid Id", 400);
+        }
+        if (!employeeStatus || !isValidEmploymentStatus(employeeStatus)) {
+            return sendError(res, "Invalid Status", 400);
+        }
+
+        const employee = await Employee.findById(id);
+
+        if (!employee) {
+            return sendError(res, "Employee not found", 404);
+        }
+
+        if (["Terminated", "Resigned"].includes(employee.employmentStatus)) {
+            return sendError(res, "Employee has already left the company", 409);
+        }
+        if (["Terminated", "Resigned"].includes(employmentStatus)) {
+            const user = await Users.findById(employee.user);
+            if (!user) {
+                return sendError(res, "Employee User Account Not Found", 404);
+            }
+            if (user.isActive === true) {
+                user.isActive = false;
+                await user.save();
+            };
+            await Departments.updateMany({ manager: employee._id }, { $set: { manager: null } });
+        }
+        employee.employmentStatus = employeeStatus;
+
+        if (typeof reason !== "string" || !reason.trim()) {
+          return sendError(res,"Reason is require to update employment status",400);
+        }
+        employee.statusUpdateReason = reason;
+        await employee.save();
+        return sendResponse(res, "update status successfully", 200, employee);
+
+    } catch (error) {
+        console.error("Error updating employment status:", error);
+        return sendError(res, "Internal Server Error", 500);
+    }
+}
 
 module.exports = {
     createEmployee,
-    getAllEmployee
+    getAllEmployee,
+    getEmployeeById,
+    deleteEmployee
 }; 

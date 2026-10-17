@@ -1,5 +1,5 @@
 const rateLimiter = require("express-rate-limit");
-const sendError = require("../helpers/errorHelper");
+const { sendError } = require("../helpers/errorHelper");
 const loginLimiter = rateLimiter({
     windowMs: Number(process.env.RATELIMIT),
     max: Number(process.env.RATELIMIT_MAX),

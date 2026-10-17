@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken")
 const Users = require("../models/Auth");
 const Role = require("../models/Role");
-const sendError = require("../helpers/errorHelper");
+const {sendError} = require("../helpers/errorHelper");
 const { sendOtpMail } = require("../mails/otpMail");
 const bcrypt = require("bcrypt");
 const { generateToken, generateResetPasswordToken } = require("../helpers/token");
@@ -162,7 +162,9 @@ const login = async (req, res) => {
     if (!user) {
       return sendError(res, "Invalid email or password", 401);
     }
-
+    if (user.isActive === false) {
+        return sendError(res, "Your account has been deactivated. Please contact HR.", 403);
+    }
     if (user.otpVerification !== true) {
       return sendError(res, "Email is not verified")
     }

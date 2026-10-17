@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 const { Departments } = require("../models/Department");
 const { Employee } = require("../models/Employee");
-const sendError = require("../helpers/errorHelper");
+const {sendError} = require("../helpers/errorHelper");
 
 const createDepartment = async (req, res) => {
   try {

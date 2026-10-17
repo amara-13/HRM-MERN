@@ -4,7 +4,7 @@ const {
   isValidPassword,
   isValidName
 } = require("../helpers/validationHelper");
-const sendError = require("../helpers/errorHelper");
+const { sendError } = require("../helpers/errorHelper");
 
 const registerValidation = (req, res, next) => {
   const { name, email, password, phone } = req.body;

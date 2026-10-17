@@ -1,4 +1,4 @@
-const sendError = require("../helpers/errorHelper");
+const { sendError } = require("../helpers/errorHelper");
 const Permission = require('../models/Permission');
 
 
