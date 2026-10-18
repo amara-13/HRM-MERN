@@ -89,7 +89,7 @@ const createEmployee = async (req, res) => {
             if (!mongoose.Types.ObjectId.isValid(reportingManager)) {
                 return sendError(res, "Invalid reporting manager ID", 400);
             }
-            const existReportingManager = await Employee.findById(reportingManager);
+            const existReportingManager = await Employee.findOne({ _id: reportingManager, deletedAt: null });
             if (!existReportingManager) {
                 return sendError(res, "Reporting manager employee not found", 404);
             }
@@ -249,7 +249,7 @@ const getAllEmployee = async (req, res) => {
         const sortOptions = {
             [sortField]: sortDirection === "asc" ? 1 : -1,
         };
-        const filter = {};
+        const filter = { deletedAt: null, };
         if (search && search.trim()) {
             const searchTerm = search.trim().replace(
                 /[.*+?^${}()|[\]\\]/g,
@@ -304,7 +304,7 @@ const getEmployeeById = async (req, res) => {
         if (!id || !mongoose.Types.ObjectId.isValid(id)) {
             return sendError(res, "Invalid Id", 400);
         }
-        const existingEmployee = await Employee.findById(id);
+        const existingEmployee = await Employee.findOne({ _id: id, deletedAt: null });
         if (!existingEmployee) {
             return sendError(res, "Employee not found", 404);
         }
@@ -338,7 +338,7 @@ const deleteEmployee = async (req, res) => {
                 };
                 return;
             }
-            if (employee.employmentStatus === "Terminated") {
+            if (employee.deletedAt !== null || employee.employmentStatus === "Terminated") {
 
                 result = {
                     success: false,
@@ -412,13 +412,13 @@ const updateEmploymentStatus = async (req, res) => {
             return sendError(res, "Invalid Status", 400);
         }
 
-        const employee = await Employee.findById(id);
+        const employee = await Employee.findOne({ _id: id, deletedAt: null });
 
         if (!employee) {
             return sendError(res, "Employee not found", 404);
         }
 
-        if (["Terminated", "Resigned"].includes(employee.employmentStatus)) {
+        if (employee.deletedAt !== null || ["Terminated", "Resigned"].includes(employee.employmentStatus)) {
             return sendError(res, "Employee has already left the company", 409);
         }
         if (["Terminated", "Resigned"].includes(employmentStatus)) {
@@ -471,7 +471,7 @@ const updateJobDetails = async (req, res) => {
             return sendError(res, "At least one job detail field must be provided to update", 400);
         }
 
-        const employee = await Employee.findById(id);
+        const employee = await Employee.findOne({ _id: id, deletedAt: null });
         if (!employee) {
             return sendError(res, "Employee not found", 404);
         }
@@ -509,7 +509,7 @@ const updateJobDetails = async (req, res) => {
                     return sendError(res, "An employee cannot be their own reporting manager", 409);
                 }
 
-                const existingReportingManager = await Employee.findById(reportingManager);
+                const existingReportingManager = await Employee.findOne({ _id: reportingManager, deletedAt: null });
                 if (!existingReportingManager) {
                     return sendError(res, "Reporting manager not found", 404);
                 }
@@ -583,6 +583,7 @@ const getEmployeesByDepartment = async (req, res) => {
         }
         const query = {
             department: existingDepartment._id,
+            deletedAt: null,
         };
 
         if (status !== undefined) {
@@ -591,18 +592,49 @@ const getEmployeesByDepartment = async (req, res) => {
 
         const employees = await Employee.find(query).select("firstName  lastName email employeeId designation phone employmentType employmentStatus profilePhoto")
             .populate("department", "name").populate("reportingManager", "firstName lastName email");
-        
-            return res.status(200).json({
+
+        return res.status(200).json({
             success: true,
             message: "Employees fetched successfully",
             count: employees.length,
             data: employees
-         });
+        });
     }
-    
+
     catch (error) {
         console.log("Error While Fetching Employees by Department Id", error);
         return sendError(res, "Interval Server Error", 500);
+    }
+};
+const getDirectReports = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return sendError(res, "Invalid Id", 400);
+        }
+        const manager = await Employee.findById(id);
+        if (!manager) {
+            return sendError(res, "manager not found", 404);
+        }
+        if (manager.deletedAt != null) {
+            return sendError(res, "manager is not active or may be deleted", 409);
+        }
+
+        const employees = await Employee.find({ reportingManager: manager._id, _id: { $ne: manager._id }, deletedAt: null }).select(
+            "firstName lastName employeeId designation email phone employmentStatus profilePhoto"
+        ).populate("department", "name").populate("reportingManager", "firstName lastName email employeeId");
+
+        return res.status(200).json({
+            success: true,
+            message: "fetch employees by manager Id sucsessfully",
+            data: employees,
+            count: employees.length,
+
+        });
+
+    } catch (error) {
+        console.log("Error while fetching direct reports", error);
+        return sendError(res, "Internnal Server Error", 500);
     }
 };
 
@@ -615,5 +647,6 @@ module.exports = {
     updateEmploymentStatus,
     updateJobDetails,
     getEmployeesByDepartment,
+    getDirectReports,
 
 };
