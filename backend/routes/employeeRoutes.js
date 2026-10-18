@@ -10,5 +10,7 @@ router.get("/:id",protected,authorize("employee.view"),getEmployeeById);
 router.delete("/:id",protected,authorize("employee.delete"),deleteEmployee);
 router.patch("/status/:id",protected,authorize("employee.status.update"),updateEmploymentStatus);
 router.patch("/:id/job-details",protected,authorize("employee.job.update"),updateJobDetails);
+router.get("/department/:id",protected,authorize("employee.viewAll"),getEmployeesByDepartment);
+
 module.exports = router;
 

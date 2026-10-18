@@ -560,6 +560,51 @@ const updateJobDetails = async (req, res) => {
         return sendError(res, "Internal Server Error", 500);
     }
 };
+const getEmployeesByDepartment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.query;
+
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return sendError(res, "Invalid Id", 400);
+        }
+        const existingDepartment = await Departments.findById(id);
+        if (!existingDepartment) {
+            return sendError(res, "Department not found", 404);
+        }
+        if (existingDepartment.isActive !== true) {
+            return sendError(res, "Department is not active", 409);
+        }
+        if (status !== undefined) {
+            if (typeof status !== "string" || !isValidEmploymentStatus(status)) {
+                return sendError(res, "Invalid employment status", 400);
+            }
+
+        }
+        const query = {
+            department: existingDepartment._id,
+        };
+
+        if (status !== undefined) {
+            query.employmentStatus = status;
+        }
+
+        const employees = await Employee.find(query).select("firstName  lastName email employeeId designation phone employmentType employmentStatus profilePhoto")
+            .populate("department", "name").populate("reportingManager", "firstName lastName email");
+        
+            return res.status(200).json({
+            success: true,
+            message: "Employees fetched successfully",
+            count: employees.length,
+            data: employees
+         });
+    }
+    
+    catch (error) {
+        console.log("Error While Fetching Employees by Department Id", error);
+        return sendError(res, "Interval Server Error", 500);
+    }
+};
 
 
 module.exports = {
@@ -569,4 +614,6 @@ module.exports = {
     deleteEmployee,
     updateEmploymentStatus,
     updateJobDetails,
+    getEmployeesByDepartment,
+
 };
