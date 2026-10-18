@@ -11,6 +11,10 @@ const {
     isValidEmploymentStatus,
     isValidEmploymentType,
     isValidGender,
+    isValidWorkLocation,
+    isValidGrade,
+    isValidPayCycle,
+
 } = require("../helpers/validationHelper");
 const createEmployee = async (req, res) => {
     try {
@@ -431,7 +435,7 @@ const updateEmploymentStatus = async (req, res) => {
         employee.employmentStatus = employeeStatus;
 
         if (typeof reason !== "string" || !reason.trim()) {
-          return sendError(res,"Reason is require to update employment status",400);
+            return sendError(res, "Reason is require to update employment status", 400);
         }
         employee.statusUpdateReason = reason;
         await employee.save();
@@ -442,10 +446,127 @@ const updateEmploymentStatus = async (req, res) => {
         return sendError(res, "Internal Server Error", 500);
     }
 }
+const updateJobDetails = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const {
+            department,
+            designation,
+            grade,
+            reportingManager,
+            employmentType,
+            workLocation,
+        } = req.body;
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return sendError(res, "Invalid employee ID format", 400);
+        }
+        if (
+            department === undefined &&
+            designation === undefined &&
+            grade === undefined &&
+            reportingManager === undefined &&
+            employmentType === undefined &&
+            workLocation === undefined
+        ) {
+            return sendError(res, "At least one job detail field must be provided to update", 400);
+        }
+
+        const employee = await Employee.findById(id);
+        if (!employee) {
+            return sendError(res, "Employee not found", 404);
+        }
+        if (["Terminated", "Resigned"].includes(employee.employmentStatus) || employee.deletedAt !== null) {
+            return sendError(res, "Cannot update job details for a terminated or resigned employee", 400);
+        }
+        if (department !== undefined) {
+            if (!department || !mongoose.Types.ObjectId.isValid(department)) {
+                return sendError(res, "Invalid department ID", 400);
+            }
+            const existingDepartment = await Departments.findById(department);
+            if (!existingDepartment) {
+                return sendError(res, "Department not found", 404);
+            }
+            if (existingDepartment.isActive !== true) {
+                return sendError(res, "Selected department is inactive", 400);
+            }
+            employee.department = department;
+        }
+        if (designation !== undefined) {
+            if (typeof designation !== "string" || !designation.trim()) {
+                return sendError(res, "Valid designation is required", 400);
+            }
+            employee.designation = designation.trim();
+        }
+        if (reportingManager !== undefined) {
+            if (reportingManager === null) {
+                employee.reportingManager = null;
+            } else {
+                if (!mongoose.Types.ObjectId.isValid(reportingManager)) {
+                    return sendError(res, "Invalid reporting manager ID", 400);
+                }
+
+                if (reportingManager.toString() === id) {
+                    return sendError(res, "An employee cannot be their own reporting manager", 409);
+                }
+
+                const existingReportingManager = await Employee.findById(reportingManager);
+                if (!existingReportingManager) {
+                    return sendError(res, "Reporting manager not found", 404);
+                }
+
+                if (["Terminated", "Resigned"].includes(existingReportingManager.employmentStatus)) {
+                    return sendError(res, "Reporting manager has already left the company", 409);
+                }
+
+                if (existingReportingManager.reportingManager?.toString() === id) {
+                    return sendError(res, "Circular reporting detected. This manager already reports to this employee", 400);
+                }
+
+                employee.reportingManager = reportingManager;
+            }
+        }
+        if (grade !== undefined) {
+            if (grade !== null && !isValidGrade(grade)) {
+                return sendError(res, "Invalid grade. Allowed: Junior, Mid-Level, Senior, Manager", 400);
+            }
+            employee.grade = grade;
+        }
+        if (employmentType !== undefined) {
+            if (!isValidEmploymentType(employmentType)) {
+                return sendError(res, "Invalid employment type", 400);
+            }
+            employee.employmentType = employmentType;
+        }
+        if (workLocation !== undefined) {
+            if (workLocation !== null && !isValidWorkLocation(workLocation)) {
+                return sendError(res, "Invalid work location", 400);
+            }
+            employee.workLocation = workLocation;
+        }
+
+        await employee.save();
+        await employee.populate("department", "name");
+        await employee.populate("reportingManager", "firstName lastName employeeId");
+
+        return sendResponse(
+            res,
+            "Employee job details updated successfully",
+            200,
+            employee
+        );
+
+    } catch (error) {
+        console.error("Error while updating job details:", error);
+        return sendError(res, "Internal Server Error", 500);
+    }
+};
+
 
 module.exports = {
     createEmployee,
     getAllEmployee,
     getEmployeeById,
-    deleteEmployee
-}; 
+    deleteEmployee,
+    updateEmploymentStatus,
+    updateJobDetails,
+};

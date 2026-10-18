@@ -26,6 +26,24 @@ const permissions = [
     description: "Delete employees",
   },
   {
+    name: "employee.viewAll",
+    module: "employee",
+    action: "viewAll",
+    description: "veiw all employees",
+  },
+    {
+    name: "employee.job.update",
+    module: "employee",
+    action: "job.update",
+    description: "update employees job",
+  },
+    {
+    name: "employee.status.update",
+    module: "employee",
+    action: "status.update",
+    description: "update employees status",
+  },
+  {
     name: "attendance.viewAll",
     module: "attendance",
     action: "viewAll",

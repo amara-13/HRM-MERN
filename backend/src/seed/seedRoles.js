@@ -4,14 +4,17 @@ const roles = {
      "Super Admin": [
     "employee.view",
     "employee.create",
+    "employee.viewAll",
     "employee.update",
     "employee.delete",
+    "employee.status.update",
+    "employee.job.update",
     "attendance.viewAll",
     "leave.apply",
     "leave.approve",
     "payroll.run",
     "payroll.viewOwn",
-    "role.manage",
+    "role.manage", 
      ],
      "HR Admin": [
     "employee.view",

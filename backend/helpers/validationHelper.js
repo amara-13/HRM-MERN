@@ -3,9 +3,11 @@ const phoneRegex = /^(\+92|0)3\d{9}$/;
 const passwordRegex =/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 const nameRegex  = /^[A-Za-z\s]{2,50}$/;
 const GENDERS = ["Female", "Male", "Other"];
-const EMPLOYMENT_TYPES = ["Full-time", "Part-time", "Contract", "Intern", "Temporary"];
-const EMPLOYMENT_STATUS = ["Active", "Probation", "Confirmed", "Notice Period", "Resigned", "Terminated"];
-
+const employmentTypes = ["Full-time", "Part-time", "Contract", "Intern", "Temporary"];
+const employmentStatus = ["Active", "Probation", "Confirmed", "Notice Period", "Resigned", "Terminated"];
+const workLocations = ["Head Office - Karachi","Branch - Lahore","Remote",];
+const grades = ["Junior", "Mid-Level", "Senior", "Manager"];
+const payCycle = ["Monthly", "Bi-Weekly", "Weekly"];
 
 const isValidEmail = (email)=>{
     return emailRegex.test(email);
@@ -27,12 +29,23 @@ const isValidGender = (val) => {
     return GENDERS.includes(val);
 }
 const isValidEmploymentType = (type) => {
-    return EMPLOYMENT_TYPES.includes(type);
+    return employmentTypes .includes(type);
 }
 
 const isValidEmploymentStatus = (status) => {
-    return EMPLOYMENT_STATUS.includes(status);
+    return employmentStatus.includes(status);
 };
+
+const isValidWorkLocation = (location) => {
+    return workLocations.includes(location);
+};
+
+const isValidGrade = (grade) => {
+    return grades.includes(grade);
+};
+const isValidPayCycle = (pay)=>{
+    return payCycle .includes(payCycle);
+}
 
 module.exports = {
     isValidEmail,
@@ -42,4 +55,7 @@ module.exports = {
     isValidGender,
     isValidEmploymentType,
     isValidEmploymentStatus,
-}
+    isValidWorkLocation,
+    isValidGrade,
+    isValidPayCycle,
+};
