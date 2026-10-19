@@ -10,8 +10,10 @@ const { createEmployee,
     updateEmploymentStatus,
     getEmployeesByDepartment,
     getDirectReports,
+    getEmployeeStats,
   } = require("../controllers/employeeController");
- 
+  
+router.get("/stats",protected,authorize("employee.viewAll"),getEmployeeStats);
 router.get("/",protected,authorize("employee.viewAll"),getAllEmployee );
 router.post("/",protected,authorize("employee.create"),createEmployee);
 router.get("/:id",protected,authorize("employee.view"),getEmployeeById);

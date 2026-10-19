@@ -28,7 +28,6 @@ app.use("/auth", authRoutes);
 app.use("/api/permissions",permissionRoutes);
 app.use("/api/department",departmentRoutes);
 app.use("/api/employee",employeeRoutes);
-
 // Global Error Handler
 app.use((err, req, res, next) => {
     console.error("Unhandled Error:", err);

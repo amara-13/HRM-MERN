@@ -316,7 +316,6 @@ const getEmployeeById = async (req, res) => {
     }
 }
 const deleteEmployee = async (req, res) => {
-
     const { id } = req.params;
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         return sendError(res, "Invalid Id", 400);
@@ -420,19 +419,19 @@ const updateEmploymentStatus = async (req, res) => {
 
         if (employee.deletedAt !== null || ["Terminated", "Resigned"].includes(employee.employmentStatus)) {
             return sendError(res, "Employee has already left the company", 409);
-        }
-        if (["Terminated", "Resigned"].includes(employmentStatus)) {
-            const user = await Users.findById(employee.user);
-            if (!user) {
-                return sendError(res, "Employee User Account Not Found", 404);
-            }
-            if (user.isActive === true) {
-                user.isActive = false;
-                await user.save();
-            };
+        } 
+            if (["Terminated", "Resigned"].includes(employeeStatus)) {
+                const user = await Users.findById(employee.user);
+                if (!user) {
+                    return sendError(res, "Employee User Account Not Found", 404);
+                }
+                if (user.isActive === true) {
+                    user.isActive = false;
+                    await user.save();
+                };
             await Departments.updateMany({ manager: employee._id }, { $set: { manager: null } });
-        }
-        employee.employmentStatus = employeeStatus;
+            employee.deletedAt = new Date();}
+           employee.employmentStatus = employeeStatus;
 
         if (typeof reason !== "string" || !reason.trim()) {
             return sendError(res, "Reason is require to update employment status", 400);
@@ -637,6 +636,32 @@ const getDirectReports = async (req, res) => {
         return sendError(res, "Internnal Server Error", 500);
     }
 };
+const getEmployeeStats = async (req, res) => {
+    try {
+        console.log("djfodfjdo");
+        const totalEmployees = await Employee.countDocuments({ deletedAt: null });
+        const activeEmployees = await Employee.countDocuments({ employmentStatus: "Active", deletedAt: null });
+        const probationEmployees = await Employee.countDocuments({ employmentStatus: "Probation", deletedAt: null });
+        const terminatedEmployees = await Employee.countDocuments({ employmentStatus: "Terminated" });
+        const resignedEmployees = await Employee.countDocuments({ employmentStatus: "Resigned" });
+        const byEmploymentType = await Employee.aggregate([
+            { $match: { deletedAt: null } },
+            { $group: { _id: "$employmentType", count: { $sum: 1 } } }
+        ]);
+        return sendResponse(res, "Employee Statistics fetched successfully", 200, {
+            summary: {
+                total: totalEmployees,
+                active: activeEmployees,
+                probation: probationEmployees,
+                terminated: terminatedEmployees,
+                resigned: resignedEmployees,
+            }, byEmploymentType,
+        });
+    } catch (error) {
+        console.log("Error while fetching employee stats", error);
+        return sendError(res, "Internal Server Error", 500);
+    }
+};
 
 
 module.exports = {
@@ -648,5 +673,6 @@ module.exports = {
     updateJobDetails,
     getEmployeesByDepartment,
     getDirectReports,
+    getEmployeeStats,
 
 };
