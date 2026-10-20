@@ -3,21 +3,22 @@ const router = express.Router();
 const {protected} = require("../middleware/authMiddleware");
 const authorize = require("../middleware/authorize");
 const { createEmployee,
-    getAllEmployee,
-    getEmployeeById,
-    deleteEmployee,
-    updateJobDetails,
-    updateEmploymentStatus,
-    getEmployeesByDepartment,
-    getDirectReports,
-    getEmployeeStats,
-  } = require("../controllers/employeeController");
-  
+  getAllEmployee,
+  getEmployeeById,
+  deleteEmployee,
+  updateJobDetails,
+  updateEmploymentStatus,
+  getEmployeesByDepartment,
+  getDirectReports,
+  uploadEmployeeDocument,
+} = require("../controllers/employeeController");
+
 router.get("/stats",protected,authorize("employee.viewAll"),getEmployeeStats);
 router.get("/",protected,authorize("employee.viewAll"),getAllEmployee );
 router.post("/",protected,authorize("employee.create"),createEmployee);
 router.get("/:id",protected,authorize("employee.view"),getEmployeeById);
 router.delete("/:id",protected,authorize("employee.delete"),deleteEmployee);
+router.post("/:id/document",protected,authorize("employee.create"),uploadEmployeeDocument);
 router.patch("/status/:id",protected,authorize("employee.status.update"),updateEmploymentStatus);
 router.patch("/:id/job-details",protected,authorize("employee.job.update"),updateJobDetails);
 router.get("/department/:id",protected,authorize("employee.viewAll"),getEmployeesByDepartment);

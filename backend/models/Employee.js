@@ -149,6 +149,11 @@ const employeeSchema = mongoose.Schema({
                     "Employment Contract",
                     "Educational Certificate",
                     "Experience Letter",
+                    "Matriculation",
+                    "Intermediate",
+                    "Bachelor's Degree",
+                    "Master's Degree",
+                    "Other",
                 ],
                 required: true,
             },
@@ -167,10 +172,6 @@ const employeeSchema = mongoose.Schema({
             size: {
                 type: Number,
                 required: true,
-            },
-            expiryDate: {
-                type: Date,
-                default: null,
             },
         },
     ],

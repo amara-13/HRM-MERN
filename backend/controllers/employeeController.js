@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const fs = require("fs");
+
 const { Departments } = require("../models/Department");
 const { Employee } = require("../models/Employee");
 const Users = require("../models/Auth");
@@ -14,7 +16,7 @@ const {
     isValidWorkLocation,
     isValidGrade,
     isValidPayCycle,
-
+    isValidDocumentType,
 } = require("../helpers/validationHelper");
 const createEmployee = async (req, res) => {
     try {
@@ -663,6 +665,105 @@ const getEmployeeStats = async (req, res) => {
     }
 };
 
+const uploadEmployeeDocument = async (req, res) => {
+    const removeFile = () => {
+        if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+            fs.unlink(req.file.path, (err) => {
+                if (err) console.error("Error deleting file:", err);
+            });
+        }
+    };
+
+    try {
+        const { id } = req.params;
+        const { type } = req.body;
+
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            removeFile();
+            return sendError(res, "Invalid employee ID", 400);
+        }
+
+        if (!req.file) {
+            return sendError(res, "File is required", 400);
+        }
+
+        if (!type || !isValidDocumentType(type)) {
+            removeFile();
+            return sendError(res, "Invalid document type", 400);
+        }
+
+          const employee = await Employee.findOne({ _id: id, deletedAt: null });
+        if (!employee) {
+            removeFile();
+            return sendError(res, "Employee not found", 404);
+        }
+
+        const newDoc = {
+            type,
+            filePath: req.file.path,
+            originalName: req.file.originalname,
+            mimeType: req.file.mimetype,
+            size: req.file.size,
+        };
+
+        employee.documents.push(newDoc);
+        await employee.save();
+
+        const createdDocumentObject = employee.documents[employee.documents.length - 1];
+
+        return sendResponse(res, "Document uploaded successfully", 201, createdDocumentObject);
+    } catch (error) {
+        removeFile();
+        console.error("Error while uploading employee document:", error);
+        return sendError(res, "Upload or database failure", 500);
+    }
+};
+
+const deleteEmployeeDocument = async (req, res) => {
+    try {
+        const { id, docId } = req.params;
+
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return sendError(res, "Invalid employee ID", 400);
+        }
+        if (!docId || !mongoose.Types.ObjectId.isValid(docId)) {
+            return sendError(res, "Invalid document ID", 400);
+        }
+        const employee = await Employee.findOne({
+            _id: id,
+            deletedAt: null,
+        });
+        if (!employee) {
+            return sendError(res, "Employee not found", 404);
+        }
+        const document = await employee.documents.id(docId);
+
+        if (!document) {
+            return sendError(res, "Employee document not found", 404);
+        }
+        const fs = require("fs/promises");
+        const filePath = document.filePath;
+        document.deleteOne();
+        await employee.save();
+        if (filePath) {
+            try {
+                await fs.unlink(filePath);
+            } catch (fileError) {
+                if (fileError.code !== "ENOENT") {
+                    console.error( "Document removed from database, but file deletion failed:",fileError);
+                }
+            }
+        }
+        return sendResponse(
+            res,"Employee document deleted successfully",200
+        );
+
+    } catch (error) {
+        console.error("Error while deleting employee document:", error);
+
+        return sendError(res,"Failed to delete employee document", 500);
+    }
+};
 
 module.exports = {
     createEmployee,
@@ -674,5 +775,6 @@ module.exports = {
     getEmployeesByDepartment,
     getDirectReports,
     getEmployeeStats,
-
+    uploadEmployeeDocument,
+    deleteEmployeeDocument,
 };

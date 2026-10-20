@@ -8,6 +8,17 @@ const employmentStatus = ["Active", "Probation", "Confirmed", "Notice Period", "
 const workLocations = ["Head Office - Karachi","Branch - Lahore","Remote",];
 const grades = ["Junior", "Mid-Level", "Senior", "Manager"];
 const payCycle = ["Monthly", "Bi-Weekly", "Weekly"];
+const documentTypes = [
+    "CNIC/National ID",
+    "Employment Contract",
+    "Educational Certificate",
+    "Experience Letter",
+    "Matriculation",
+    "Intermediate",
+    "Bachelor's Degree",
+    "Master's Degree",
+    "Other",
+];
 
 const isValidEmail = (email)=>{
     return emailRegex.test(email);
@@ -47,6 +58,10 @@ const isValidPayCycle = (pay)=>{
     return payCycle .includes(payCycle);
 }
 
+const isValidDocumentType = (type) => {
+    return documentTypes.includes(type);
+};
+
 module.exports = {
     isValidEmail,
     isValidPhone,
@@ -58,4 +73,5 @@ module.exports = {
     isValidWorkLocation,
     isValidGrade,
     isValidPayCycle,
+    isValidDocumentType,
 };
