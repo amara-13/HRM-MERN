@@ -718,7 +718,6 @@ const uploadEmployeeDocument = async (req, res) => {
         return sendError(res, "Upload or database failure", 500);
     }
 };
-
 const deleteEmployeeDocument = async (req, res) => {
     try {
         const { id, docId } = req.params;
