@@ -12,6 +12,7 @@ const { createEmployee,
   getDirectReports,
   uploadEmployeeDocument,
   deleteEmployeeDocument,
+  getEmployeeStats,
 } = require("../controllers/employeeController");
 
 router.get("/stats",protected,authorize("employee.viewAll"),getEmployeeStats);

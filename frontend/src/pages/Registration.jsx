@@ -57,15 +57,15 @@ export default function Registration() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-surface">
       {/* Header */}
-      <header className="bg-[#0A1329] border-b border-[#1E293B]/50 sticky top-0 z-50">
+      <header className="bg-primary-dk border-b border-muted/20 sticky top-0 z-50">
         <div className="max-w-[540px] mx-auto px-4 py-3.5 flex items-center gap-3">
-          <div className="h-8 w-8 rounded-xl bg-[#2563EB] flex items-center justify-center font-bold text-white shadow-xs">
+          <div className="h-8 w-8 rounded-xl bg-primary flex items-center justify-center font-bold text-white shadow-xs">
             P
           </div>
           <span className="font-semibold text-white tracking-tight text-base">
-            PeopleHub <span className="text-[#60A5FA] font-medium text-sm ml-0.5">HRM</span>
+            PeopleHub <span className="text-muted font-medium text-sm ml-0.5">HRM</span>
           </span>
         </div>
       </header>
@@ -74,21 +74,21 @@ export default function Registration() {
       <main className="max-w-[540px] mx-auto px-4 py-10">
         {/* Title & Subtitle */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-[#0F172A] tracking-tight">
+          <h1 className="text-2xl font-bold text-ink tracking-tight">
             User Registration
           </h1>
-          <p className="mt-1 text-sm text-[#64748B]">
+          <p className="mt-1 text-sm text-ink/70">
             Create a new account by filling in your details below.
           </p>
         </div>
 
         {/* Simple Registration Form */}
         <form noValidate className="space-y-5" onSubmit={handleSubmit}>
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-7 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] space-y-4">
+          <div className="bg-canvas border border-muted rounded-2xl p-6 sm:p-7 shadow-[0_4px_20px_-4px_rgba(113,63,50,0.06)] space-y-4">
 
             {/* User Name */}
             <div>
-              <label className="block text-sm font-semibold text-[#1E293B] mb-1.5" htmlFor="username">
+              <label className="block text-sm font-semibold text-ink mb-1.5" htmlFor="username">
                 User name *
               </label>
               <input
@@ -96,16 +96,16 @@ export default function Registration() {
                 type="text"
                 placeholder="Ayesha Khan"
                 name="name" value={formData.name} onChange={handleChange}
-                className="w-full px-3.5 py-2.5 text-sm bg-white border border-[#E2E8F0] rounded-xl text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all duration-150"
+                className="w-full px-3.5 py-2.5 text-sm bg-canvas border border-muted rounded-xl text-ink placeholder:text-ink/40 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition-all duration-150"
               />
-              <p className="mt-1.5 text-xs text-[#64748B]">
+              <p className="mt-1.5 text-xs text-ink/70">
                 Use letters and spaces only.
               </p>
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-[#1E293B] mb-1.5" htmlFor="email">
+              <label className="block text-sm font-semibold text-ink mb-1.5" htmlFor="email">
                 Email *
               </label>
               <input
@@ -113,13 +113,13 @@ export default function Registration() {
                 type="email"
                 placeholder="ayesha@company.com"
                 name="email" value={formData.email} onChange={handleChange}
-                className="w-full px-3.5 py-2.5 text-sm bg-white border border-[#E2E8F0] rounded-xl text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all duration-150"
+                className="w-full px-3.5 py-2.5 text-sm bg-canvas border border-muted rounded-xl text-ink placeholder:text-ink/40 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition-all duration-150"
               />
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-semibold text-[#1E293B] mb-1.5" htmlFor="password">
+              <label className="block text-sm font-semibold text-ink mb-1.5" htmlFor="password">
                 Password *
               </label>
               <input
@@ -127,16 +127,16 @@ export default function Registration() {
                 type="password"
                 placeholder="••••••••"
                 name="password" value={formData.password} onChange={handleChange}
-                className="w-full px-3.5 py-2.5 text-sm bg-white border border-[#E2E8F0] rounded-xl text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all duration-150"
+                className="w-full px-3.5 py-2.5 text-sm bg-canvas border border-muted rounded-xl text-ink placeholder:text-ink/40 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition-all duration-150"
               />
-              <p className="mt-1.5 text-xs text-[#64748B]">
+              <p className="mt-1.5 text-xs text-ink/70">
                 8+ characters with uppercase, lowercase, number & symbol.
               </p>
             </div>
 
             {/* Mobile Number */}
             <div>
-              <label className="block text-sm font-semibold text-[#1E293B] mb-1.5" htmlFor="mobile">
+              <label className="block text-sm font-semibold text-ink mb-1.5" htmlFor="mobile">
                 Mobile number *
               </label>
               <input
@@ -144,9 +144,9 @@ export default function Registration() {
                 type="tel"
                 placeholder="+923001234567"
                 name="phone" value={formData.phone} onChange={handleChange}
-                className="w-full px-3.5 py-2.5 text-sm bg-white border border-[#E2E8F0] rounded-xl text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all duration-150"
+                className="w-full px-3.5 py-2.5 text-sm bg-canvas border border-muted rounded-xl text-ink placeholder:text-ink/40 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition-all duration-150"
               />
-              <p className="mt-1.5 text-xs text-[#64748B]">
+              <p className="mt-1.5 text-xs text-ink/70">
                 Use a valid phone number, e.g. +923001234567.
               </p>
             </div>
@@ -157,14 +157,14 @@ export default function Registration() {
           <div className="flex items-center justify-end gap-3 pt-2">
             <button
               type="reset" onClick={clearForm}
-              className="px-5 py-2.5 bg-white border border-[#CBD5E1] rounded-xl text-sm font-semibold text-[#334155] hover:bg-[#F8FAFC] hover:text-[#0F172A] active:bg-[#F1F5F9] transition-all cursor-pointer shadow-2xs"
+              className="px-5 py-2.5 bg-canvas border border-muted rounded-xl text-sm font-semibold text-ink hover:bg-surface transition-all cursor-pointer shadow-2xs"
             >
               Clear
             </button>
 
             <button
               type="submit"
-              className="px-6 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] active:bg-[#1E40AF] text-white text-sm font-semibold rounded-xl shadow-xs hover:shadow transition-all cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#2563EB]/25"
+              className="px-6 py-2.5 bg-primary hover:bg-primary-dk text-white text-sm font-semibold rounded-xl shadow-xs hover:shadow transition-all cursor-pointer focus:outline-none focus:ring-4 focus:ring-primary/25"
             >
               Register
             </button>

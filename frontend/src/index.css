@@ -1,11 +1,65 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #C45D3E;
+  --color-primary-dk: #713F32;
+
+  /* Page / app background */
+  --color-surface: #FAF5F0;
+  /* Card / input background */
+  --color-canvas: #FFFFFF;
+
+  /* Borders & muted fills */
+  --color-muted: #EAD7C8;
+  --color-muted-lt: #F5EDE4;
+
+  /* Text helpers — derived from primary-dk */
+  --color-ink: #713F32;
+}
+
 @layer base {
   body {
-    background-color: #f8fafc;
-    color: #0f172a;
+    background-color: var(--color-surface);
+    color: var(--color-ink);
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 }
+input[type = "date"]::-webkit-calendar-picker-indicator{
+  cursor:pointer;
+  opacity: 0.65;
+  filter:sepia(0.6) saturate(2) hue-rotate(330deg);
+  transition:opacity 0.2s ease;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* sweetalert2 */
+swal2-popup {
+  border-radius: 1.25rem !important;
+  background-color: var(--color-canvas) !important;
+  color: var(--color-ink) !important;
+  border: 1px solid var(--color-muted) !important;
+  box-shadow: 0 10px 30px -5px rgba(113,63,50,.15) !important;
+}
+.swal2.title{
+  color: var(--color-ink) !important;
+}
+.swal2-html-container
+  {
+color: var(--color-ink) !important; opacity: .85;
+}
+.swal2-confirm {
+  background-color: var(--color-primary) !important;
+  color: #fff !important;
+  border-radius: .75rem !important;
+  padding: .625rem 1.5rem !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(196,93,62,.25) !important;
+  transition: all .2s ease !important;
+}
+.swal2-confirm:hover { background-color: var(--color-primary-dk) !important; }
+
+

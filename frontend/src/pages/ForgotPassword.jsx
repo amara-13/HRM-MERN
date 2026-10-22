@@ -37,15 +37,15 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-surface">
       {/* Header */}
-      <header className="bg-[#0A1329] border-b border-[#1E293B]/50 sticky top-0 z-50">
+      <header className="bg-primary-dk border-b border-muted/20 sticky top-0 z-50">
         <div className="max-w-[480px] mx-auto px-4 py-3.5 flex items-center gap-3">
-          <div className="h-8 w-8 rounded-xl bg-[#2563EB] flex items-center justify-center font-bold text-white shadow-xs">
+          <div className="h-8 w-8 rounded-xl bg-primary flex items-center justify-center font-bold text-white shadow-xs">
             P
           </div>
           <span className="font-semibold text-white tracking-tight text-base">
-            PeopleHub <span className="text-[#60A5FA] font-medium text-sm ml-0.5">HRM</span>
+            PeopleHub <span className="text-muted font-medium text-sm ml-0.5">HRM</span>
           </span>
         </div>
       </header>
@@ -54,21 +54,21 @@ export default function ForgotPassword() {
       <main className="max-w-[480px] mx-auto px-4 py-12">
         {/* Title & Subtitle */}
         <div className="mb-6 text-center sm:text-left">
-          <h1 className="text-2xl font-bold text-[#0F172A] tracking-tight">
+          <h1 className="text-2xl font-bold text-ink tracking-tight">
             Forgot Password?
           </h1>
-          <p className="mt-1 text-sm text-[#64748B]">
+          <p className="mt-1 text-sm text-ink/70">
             Enter your registered email address and we will send you an OTP to reset your password.
           </p>
         </div>
 
         {/* Forgot Password Form */}
         <form noValidate className="space-y-5" onSubmit={handleSubmit}>
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-7 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] space-y-4">
+          <div className="bg-canvas border border-muted rounded-2xl p-6 sm:p-7 shadow-[0_4px_20px_-4px_rgba(113,63,50,0.06)] space-y-4">
 
             {/* Email Address */}
             <div>
-              <label className="block text-sm font-semibold text-[#1E293B] mb-1.5" htmlFor="email">
+              <label className="block text-sm font-semibold text-ink mb-1.5" htmlFor="email">
                 Email address *
               </label>
               <input
@@ -76,7 +76,7 @@ export default function ForgotPassword() {
                 type="email"
                 name="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder="ayesha@company.com"
-                className="w-full px-3.5 py-2.5 text-sm bg-white border border-[#E2E8F0] rounded-xl text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all duration-150"
+                className="w-full px-3.5 py-2.5 text-sm bg-canvas border border-muted rounded-xl text-ink placeholder:text-ink/40 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition-all duration-150"
               />
             </div>
 
@@ -84,7 +84,7 @@ export default function ForgotPassword() {
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full py-2.5 px-6 bg-[#2563EB] hover:bg-[#1D4ED8] active:bg-[#1E40AF] text-white text-sm font-semibold rounded-xl shadow-xs hover:shadow transition-all cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#2563EB]/25"
+                className="w-full py-2.5 px-6 bg-primary hover:bg-primary-dk text-white text-sm font-semibold rounded-xl shadow-xs hover:shadow transition-all cursor-pointer focus:outline-none focus:ring-4 focus:ring-primary/25"
               >
                 Send OTP
               </button>
@@ -93,9 +93,9 @@ export default function ForgotPassword() {
           </div>
 
           {/* Back to Login Link */}
-          <p className="text-center text-sm text-[#64748B]">
+          <p className="text-center text-sm text-ink/70">
             Remembered your password?{' '}
-            <Link to="/login" className="font-semibold text-[#2563EB] hover:text-[#1D4ED8] hover:underline transition-colors">
+            <Link to="/login" className="font-semibold text-primary hover:text-primary-dk hover:underline transition-colors">
               Back to login
             </Link>
           </p>
