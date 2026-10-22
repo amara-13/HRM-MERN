@@ -4,7 +4,6 @@ import Registration from './pages/Registration.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import OtpVerification from './pages/OtpVerification.jsx'
 import UpdatePassword from './pages/UpdatePassword.jsx'
-import Dashboard from './pages/Dashboard.jsx'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 function App() {
@@ -18,7 +17,6 @@ function App() {
         <Route path="/forgot" element={<ForgotPassword />} />
         <Route path="/otp" element={<OtpVerification />} />
         <Route path="/reset-password" element={<UpdatePassword/>} />
-        <Route path="/dashboard" element={<Dashboard />} />
 
 
 
